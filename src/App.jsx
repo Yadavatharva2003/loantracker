@@ -20,6 +20,7 @@ const App = () => {
   const [transactions, setTransactions] = useState([]);
   const [filterMonth, setFilterMonth] = useState("");
   const [filterYear, setFilterYear] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [editId, setEditId] = useState(null);
   const [activeTab, setActiveTab] = useState("Dashboard");
 
@@ -32,16 +33,16 @@ const App = () => {
       .catch((err) => console.error("Failed to fetch transactions:", err));
   }, []);
 
-  useEffect(() => {
-    if (activeTab === "Graphs") {
-      // Scroll the window to the graphs section's top offset
-      if (graphsRef.current) {
-        const top =
-          graphsRef.current.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({ top, behavior: "smooth" });
-      }
-    }
-  }, [activeTab]);
+  // Removed scroll effect for graphs tab to improve UX
+  // useEffect(() => {
+  //   if (activeTab === "Graphs") {
+  //     if (graphsRef.current) {
+  //       const top =
+  //         graphsRef.current.getBoundingClientRect().top + window.pageYOffset;
+  //       window.scrollTo({ top, behavior: "smooth" });
+  //     }
+  //   }
+  // }, [activeTab]);
 
   const addTransaction = (transaction) => {
     if (editId) {
@@ -106,6 +107,7 @@ const App = () => {
     setEditId(id);
   };
 
+  // Filter transactions based on month, year, and search term
   const filteredTransactions = transactions.filter((t) => {
     const date = new Date(t.date);
     const monthMatch = filterMonth
@@ -114,7 +116,12 @@ const App = () => {
     const yearMatch = filterYear
       ? date.getFullYear() === parseInt(filterYear)
       : true;
-    return monthMatch && yearMatch;
+    const searchMatch = searchTerm
+      ? t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        t.type.toLowerCase().includes(searchTerm.toLowerCase())
+      : true;
+    return monthMatch && yearMatch && searchMatch;
   });
 
   const totalLoan = filteredTransactions
@@ -136,6 +143,20 @@ const App = () => {
       <div className="mb-6">
         <ExportExcel transactions={filteredTransactions} />
         <Form onAddTransaction={addTransaction} />
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="search" className="block mb-1 font-semibold">
+          {t("search_transactions")}
+        </label>
+        <input
+          id="search"
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={t("search_placeholder")}
+          className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+        />
       </div>
 
       <div className="mb-6 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
@@ -175,37 +196,31 @@ const App = () => {
       </div>
 
       <ErrorBoundary>
-        <Table
-          transactions={filteredTransactions || []}
-          onDelete={deleteTransaction}
-          onEdit={editTransaction}
-        />
+        <AnimatePresence mode="wait">
+          {activeTab === "Dashboard" ? (
+            <motion.div
+              key="dashboard"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Dashboard totalLoan={totalLoan} totalExpense={totalExpense} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="graphs"
+              ref={graphsRef}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Chart transactions={filteredTransactions} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </ErrorBoundary>
-
-      <AnimatePresence mode="wait">
-        {activeTab === "Dashboard" ? (
-          <motion.div
-            key="dashboard"
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 50 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Dashboard totalLoan={totalLoan} totalExpense={totalExpense} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="graphs"
-            ref={graphsRef}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Chart transactions={filteredTransactions} />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
