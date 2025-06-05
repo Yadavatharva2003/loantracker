@@ -113,6 +113,34 @@ app.get("/debug/transactions", (req, res) => {
   );
 });
 
+const { Configuration, OpenAIApi } = require("openai");
+require("dotenv").config();
+
+const configuration = new Configuration({
+  apiKey: "sk-abcdef1234567890abcdef1234567890abcdef12",
+});
+const openai = new OpenAIApi(configuration);
+
+app.post("/api/ai/financial-advice", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    if (!prompt) {
+      return res.status(400).json({ error: "Prompt is required" });
+    }
+    const completion = await openai.createCompletion({
+      model: "text-davinci-003",
+      prompt,
+      max_tokens: 150,
+      temperature: 0.7,
+    });
+    const advice = completion.data.choices[0].text.trim();
+    res.json({ advice });
+  } catch (error) {
+    console.error("Error fetching AI advice:", error);
+    res.status(500).json({ error: "Failed to fetch AI advice" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
