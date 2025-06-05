@@ -8,6 +8,7 @@ import Table from "./components/Table";
 import Chart from "./components/Chart";
 import Dashboard from "./components/Dashboard";
 import NavBar from "./components/NavBar";
+import ExportExcel from "./components/ExportExcel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -131,6 +132,7 @@ const App = () => {
       <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mb-6">
+        <ExportExcel transactions={filteredTransactions} />
         <Form onAddTransaction={addTransaction} />
       </div>
 

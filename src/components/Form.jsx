@@ -51,20 +51,22 @@ const Form = ({ onAddTransaction }) => {
           <option value="expense">{t("expense")}</option>
         </select>
       </div>
-      <div className="mb-4">
-        <label className="block mb-1 font-semibold">{t("category")}</label>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="border rounded p-2 w-full dark:bg-gray-700 dark:text-white"
-        >
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {t(cat.toLowerCase())}
-            </option>
-          ))}
-        </select>
-      </div>
+      {type === "expense" && (
+        <div className="mb-4">
+          <label className="block mb-1 font-semibold">{t("category")}</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="border rounded p-2 w-full dark:bg-gray-700 dark:text-white"
+          >
+            {categories.map((cat) => (
+              <option key={cat} value={cat}>
+                {t(cat.toLowerCase())}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div className="mb-4">
         <label className="block mb-1 font-semibold">{t("amount")}</label>
         <input
