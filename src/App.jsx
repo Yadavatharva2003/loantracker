@@ -18,8 +18,6 @@ const App = () => {
   const { t } = useTranslation();
 
   const [transactions, setTransactions] = useState([]);
-  const [filterMonth, setFilterMonth] = useState("");
-  const [filterYear, setFilterYear] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [editId, setEditId] = useState(null);
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -109,19 +107,12 @@ const App = () => {
 
   // Filter transactions based on month, year, and search term
   const filteredTransactions = transactions.filter((t) => {
-    const date = new Date(t.date);
-    const monthMatch = filterMonth
-      ? date.getMonth() + 1 === parseInt(filterMonth)
-      : true;
-    const yearMatch = filterYear
-      ? date.getFullYear() === parseInt(filterYear)
-      : true;
     const searchMatch = searchTerm
       ? t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         t.type.toLowerCase().includes(searchTerm.toLowerCase())
       : true;
-    return monthMatch && yearMatch && searchMatch;
+    return searchMatch;
   });
 
   const totalLoan = filteredTransactions
@@ -157,42 +148,6 @@ const App = () => {
           placeholder={t("search_placeholder")}
           className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-white"
         />
-      </div>
-
-      <div className="mb-6 flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
-        <div className="w-full sm:w-auto">
-          <label htmlFor="filterMonth" className="block mb-1 font-semibold">
-            {t("filter_month")}
-          </label>
-          <select
-            id="filterMonth"
-            value={filterMonth}
-            onChange={(e) => setFilterMonth(e.target.value)}
-            className="border rounded p-2 w-full sm:w-auto dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-          >
-            <option value="">{t("all_months")}</option>
-            {[...Array(12)].map((_, i) => (
-              <option key={i + 1} value={i + 1}>
-                {new Date(0, i).toLocaleString("default", { month: "long" })}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="w-full sm:w-auto">
-          <label htmlFor="filterYear" className="block mb-1 font-semibold">
-            {t("filter_year")}
-          </label>
-          <input
-            id="filterYear"
-            type="number"
-            value={filterYear}
-            onChange={(e) => setFilterYear(e.target.value)}
-            placeholder={t("all_years")}
-            className="border rounded p-2 w-full sm:w-24 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-            min="2000"
-            max="2100"
-          />
-        </div>
       </div>
 
       <ErrorBoundary>
