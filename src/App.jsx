@@ -12,6 +12,9 @@ import ExportExcel from "./components/ExportExcel";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { motion, AnimatePresence } from "framer-motion";
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
 const App = () => {
   const { t } = useTranslation();
 
@@ -24,7 +27,7 @@ const App = () => {
   const graphsRef = useRef(null);
 
   useEffect(() => {
-    fetch("http://localhost:4000/transactions")
+    fetch(`${API_BASE_URL}/transactions`)
       .then((res) => res.json())
       .then((data) => setTransactions(data))
       .catch((err) => console.error("Failed to fetch transactions:", err));
@@ -43,7 +46,7 @@ const App = () => {
 
   const addTransaction = (transaction) => {
     if (editId) {
-      fetch(`http://localhost:4000/transactions/${editId}`, {
+      fetch(`${API_BASE_URL}/transactions/${editId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transaction),
@@ -58,7 +61,7 @@ const App = () => {
         })
         .catch((err) => console.error("Failed to update transaction:", err));
     } else {
-      fetch("http://localhost:4000/transactions", {
+      fetch(`${API_BASE_URL}/transactions`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(transaction),
@@ -77,7 +80,7 @@ const App = () => {
         "Are you sure you want to delete this transaction? This action cannot be undone."
       )
     ) {
-      fetch(`http://localhost:4000/transactions/${id}`, {
+      fetch(`${API_BASE_URL}/transactions/${id}`, {
         method: "DELETE",
       })
         .then((res) => {
