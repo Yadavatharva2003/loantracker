@@ -4,9 +4,10 @@ import { motion } from "framer-motion";
 const tabs = ["Dashboard", "Graphs"];
 
 const NavBar = ({ activeTab, onTabChange }) => {
+  const extendedTabs = [...tabs, "Transactions"];
   return (
     <div className="flex space-x-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-4 rounded-lg shadow-lg max-w-md mx-auto mb-6">
-      {tabs.map((tab) => (
+      {extendedTabs.map((tab) => (
         <button
           key={tab}
           onClick={() => onTabChange(tab)}

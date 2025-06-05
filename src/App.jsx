@@ -131,25 +131,6 @@ const App = () => {
 
       <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="mb-6">
-        <ExportExcel transactions={filteredTransactions} />
-        <Form onAddTransaction={addTransaction} />
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="search" className="block mb-1 font-semibold">
-          {t("search_transactions")}
-        </label>
-        <input
-          id="search"
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder={t("search_placeholder")}
-          className="border rounded p-2 w-full dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-        />
-      </div>
-
       <ErrorBoundary>
         <AnimatePresence mode="wait">
           {activeTab === "Dashboard" ? (
@@ -162,7 +143,7 @@ const App = () => {
             >
               <Dashboard totalLoan={totalLoan} totalExpense={totalExpense} />
             </motion.div>
-          ) : (
+          ) : activeTab === "Graphs" ? (
             <motion.div
               key="graphs"
               ref={graphsRef}
@@ -172,6 +153,24 @@ const App = () => {
               transition={{ duration: 0.3 }}
             >
               <Chart transactions={filteredTransactions} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="transactions"
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.3 }}
+            >
+              <ExportExcel transactions={filteredTransactions} />
+              <Form onAddTransaction={addTransaction} />
+              <ErrorBoundary>
+                <Table
+                  transactions={filteredTransactions || []}
+                  onDelete={deleteTransaction}
+                  onEdit={editTransaction}
+                />
+              </ErrorBoundary>
             </motion.div>
           )}
         </AnimatePresence>
