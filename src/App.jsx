@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import "./i18n";
 import LanguageSwitcher from "./components/LanguageSwitcher";
@@ -20,12 +20,25 @@ const App = () => {
   const [editId, setEditId] = useState(null);
   const [activeTab, setActiveTab] = useState("Dashboard");
 
+  const graphsRef = useRef(null);
+
   useEffect(() => {
     fetch("http://localhost:4000/transactions")
       .then((res) => res.json())
       .then((data) => setTransactions(data))
       .catch((err) => console.error("Failed to fetch transactions:", err));
   }, []);
+
+  useEffect(() => {
+    if (activeTab === "Graphs") {
+      // Scroll the window to the graphs section's top offset
+      if (graphsRef.current) {
+        const top =
+          graphsRef.current.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    }
+  }, [activeTab]);
 
   const addTransaction = (transaction) => {
     if (editId) {
@@ -179,6 +192,7 @@ const App = () => {
         ) : (
           <motion.div
             key="graphs"
+            ref={graphsRef}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
