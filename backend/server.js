@@ -116,6 +116,20 @@ app.get("/debug/transactions", (req, res) => {
 const OpenAI = require("openai");
 require("dotenv").config();
 
+console.log("DEBUG: OPENAI_API_KEY is set:", !!process.env.OPENAI_API_KEY);
+console.log(
+  "DEBUG: OPENAI_API_KEY length:",
+  process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0
+);
+
+if (!process.env.OPENAI_API_KEY) {
+  console.error(
+    "ERROR: OPENAI_API_KEY is not set in the environment variables."
+  );
+  // Optionally, exit the process or continue with a warning
+  // process.exit(1);
+}
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -136,6 +150,13 @@ app.post("/api/ai/financial-advice", async (req, res) => {
     res.json({ advice });
   } catch (error) {
     console.error("Error fetching AI advice:", error);
+    if (error.response) {
+      console.error(
+        "OpenAI API response error:",
+        error.response.status,
+        error.response.data
+      );
+    }
     res.status(500).json({ error: "Failed to fetch AI advice" });
   }
 });
