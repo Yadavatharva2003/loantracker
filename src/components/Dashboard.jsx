@@ -33,11 +33,15 @@ Remaining: ₹${remaining.toFixed(2)}
 Advice:`;
 
         // Call AI API (example with OpenAI)
-        const response = await fetch("/api/ai/financial-advice", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ prompt }),
-        });
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+        const response = await fetch(
+          `${API_BASE_URL}/api/ai/financial-advice`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          }
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch AI advice");
         }

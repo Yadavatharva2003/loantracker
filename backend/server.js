@@ -117,7 +117,7 @@ const OpenAI = require("openai");
 require("dotenv").config();
 
 const openai = new OpenAI({
-  apiKey: "sk-abcdef1234567890abcdef1234567890abcdef12",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 app.post("/api/ai/financial-advice", async (req, res) => {
