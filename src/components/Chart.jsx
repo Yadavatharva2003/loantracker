@@ -21,8 +21,7 @@ ChartJS.register(
   Title
 );
 
-const Chart = ({ transactions }) => {
-  // Calculate total loan and expense
+const TotalLoanExpensePie = ({ transactions }) => {
   const totalLoan = transactions
     .filter((t) => t.type === "loan")
     .reduce((sum, t) => sum + t.amount, 0);
@@ -30,7 +29,6 @@ const Chart = ({ transactions }) => {
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
-  // Prepare data for Pie chart (Total loan vs expense)
   const pieData = {
     labels: ["Loan", "Expense"],
     datasets: [
@@ -43,8 +41,17 @@ const Chart = ({ transactions }) => {
     ],
   };
 
-  // Prepare data for Bar chart (Monthly loan & expense trend)
-  // Group transactions by month-year
+  return (
+    <div className="max-w-md mx-auto">
+      <h2 className="text-xl font-semibold mb-2 text-center">
+        Total Loan vs Expense
+      </h2>
+      <Pie data={pieData} />
+    </div>
+  );
+};
+
+const MonthlyLoanExpenseBar = ({ transactions }) => {
   const monthlyData = {};
   transactions.forEach(({ date, amount, type }) => {
     const monthYear = new Date(date).toLocaleDateString("en-US", {
@@ -80,7 +87,23 @@ const Chart = ({ transactions }) => {
     ],
   };
 
-  // Prepare data for Pie chart (Category-wise expense)
+  return (
+    <div className="max-w-3xl mx-auto">
+      <Bar
+        data={barData}
+        options={{
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+            title: { display: true, text: "Monthly Loan & Expense Trend" },
+          },
+        }}
+      />
+    </div>
+  );
+};
+
+const ExpenseByCategoryPie = ({ transactions }) => {
   const categoryData = {};
   transactions.forEach(({ type, category, amount }) => {
     if (type === "expense") {
@@ -123,31 +146,32 @@ const Chart = ({ transactions }) => {
   };
 
   return (
+    <div className="max-w-md mx-auto">
+      <h2 className="text-xl font-semibold mb-2 text-center">
+        Expense by Category
+      </h2>
+      <Pie data={categoryPieData} options={categoryOptions} />
+    </div>
+  );
+};
+
+const Chart = ({
+  transactions,
+  showTotalLoanExpense = true,
+  showMonthlyTrend = true,
+  showExpenseByCategory = true,
+}) => {
+  return (
     <div className="space-y-8">
-      <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-semibold mb-2 text-center">
-          Total Loan vs Expense
-        </h2>
-        <Pie data={pieData} />
-      </div>
-      <div className="max-w-3xl mx-auto">
-        <Bar
-          data={barData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: { position: "top" },
-              title: { display: true, text: "Monthly Loan & Expense Trend" },
-            },
-          }}
-        />
-      </div>
-      <div className="max-w-md mx-auto">
-        <h2 className="text-xl font-semibold mb-2 text-center">
-          Expense by Category
-        </h2>
-        <Pie data={categoryPieData} options={categoryOptions} />
-      </div>
+      {showTotalLoanExpense && (
+        <TotalLoanExpensePie transactions={transactions} />
+      )}
+      {showMonthlyTrend && (
+        <MonthlyLoanExpenseBar transactions={transactions} />
+      )}
+      {showExpenseByCategory && (
+        <ExpenseByCategoryPie transactions={transactions} />
+      )}
     </div>
   );
 };

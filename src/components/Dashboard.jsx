@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { FaMoneyBillWave, FaShoppingCart, FaWallet } from "react-icons/fa";
+import Chart from "./Chart";
 
-const Dashboard = ({ totalLoan, totalExpense }) => {
+const Dashboard = ({ transactions = [] }) => {
   const { t } = useTranslation();
+
+  const totalLoan = transactions
+    .filter((t) => t.type === "loan")
+    .reduce((sum, t) => sum + t.amount, 0);
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
   const remaining = totalLoan - totalExpense;
 
   const cardVariants = {
@@ -15,6 +23,39 @@ const Dashboard = ({ totalLoan, totalExpense }) => {
       transition: { delay: i * 0.2 },
     }),
   };
+
+  // State for chart visibility preferences
+  const [showTotalLoanExpense, setShowTotalLoanExpense] = useState(true);
+  const [showMonthlyTrend, setShowMonthlyTrend] = useState(true);
+  const [showExpenseByCategory, setShowExpenseByCategory] = useState(true);
+
+  // Load preferences from localStorage
+  useEffect(() => {
+    const prefs = JSON.parse(localStorage.getItem("dashboardPrefs"));
+    if (prefs) {
+      setShowTotalLoanExpense(prefs.showTotalLoanExpense);
+      setShowMonthlyTrend(prefs.showMonthlyTrend);
+      setShowExpenseByCategory(prefs.showExpenseByCategory);
+    }
+  }, []);
+
+  // Save preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      "dashboardPrefs",
+      JSON.stringify({
+        showTotalLoanExpense,
+        showMonthlyTrend,
+        showExpenseByCategory,
+      })
+    );
+  }, [showTotalLoanExpense, showMonthlyTrend, showExpenseByCategory]);
+
+  // Risk assessment calculation
+  const debtRatio = totalLoan === 0 ? 0 : totalExpense / totalLoan;
+  let riskLevel = "Low";
+  if (debtRatio > 0.75) riskLevel = "High";
+  else if (debtRatio > 0.5) riskLevel = "Medium";
 
   return (
     <>
@@ -53,6 +94,69 @@ const Dashboard = ({ totalLoan, totalExpense }) => {
           <p className="text-3xl font-bold">₹{remaining.toFixed(2)}</p>
         </motion.div>
       </div>
+
+      <div className="max-w-3xl mx-auto mb-6 p-4 border rounded-lg bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100">
+        <h4 className="text-xl font-semibold mb-2">{t("risk_assessment")}</h4>
+        <p>
+          {t("risk_level")}:{" "}
+          <span
+            className={
+              riskLevel === "High"
+                ? "text-red-600"
+                : riskLevel === "Medium"
+                ? "text-yellow-600"
+                : "text-green-600"
+            }
+          >
+            {riskLevel}
+          </span>
+        </p>
+      </div>
+
+      <div className="max-w-3xl mx-auto mb-6 p-4 border rounded-lg">
+        <h4 className="text-lg font-semibold mb-2">
+          {t("customize_dashboard")}
+        </h4>
+        <div className="flex flex-wrap gap-4">
+          <button
+            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+              showTotalLoanExpense
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-300 text-gray-700"
+            } hover:bg-indigo-700`}
+            onClick={() => setShowTotalLoanExpense(!showTotalLoanExpense)}
+          >
+            {t("show_total_loan_expense_chart")}
+          </button>
+          <button
+            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+              showMonthlyTrend
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-300 text-gray-700"
+            } hover:bg-indigo-700`}
+            onClick={() => setShowMonthlyTrend(!showMonthlyTrend)}
+          >
+            {t("show_monthly_trend_chart")}
+          </button>
+          <button
+            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+              showExpenseByCategory
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-300 text-gray-700"
+            } hover:bg-indigo-700`}
+            onClick={() => setShowExpenseByCategory(!showExpenseByCategory)}
+          >
+            {t("show_expense_by_category_chart")}
+          </button>
+        </div>
+      </div>
+
+      <Chart
+        transactions={transactions}
+        showTotalLoanExpense={showTotalLoanExpense}
+        showMonthlyTrend={showMonthlyTrend}
+        showExpenseByCategory={showExpenseByCategory}
+      />
     </>
   );
 };
