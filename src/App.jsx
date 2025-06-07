@@ -1,5 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import "./i18n";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import ThemeSwitcher from "./components/ThemeSwitcher";
@@ -10,7 +16,6 @@ import Dashboard from "./components/Dashboard";
 import NavBar from "./components/NavBar";
 import ExportExcel from "./components/ExportExcel";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { motion, AnimatePresence } from "framer-motion";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -20,9 +25,6 @@ const App = () => {
   const [transactions, setTransactions] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [editId, setEditId] = useState(null);
-  const [activeTab, setActiveTab] = useState("Dashboard");
-
-  const graphsRef = useRef(null);
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/transactions`)
@@ -30,17 +32,6 @@ const App = () => {
       .then((data) => setTransactions(data))
       .catch((err) => console.error("Failed to fetch transactions:", err));
   }, []);
-
-  // Removed scroll effect for graphs tab to improve UX
-  // useEffect(() => {
-  //   if (activeTab === "Graphs") {
-  //     if (graphsRef.current) {
-  //       const top =
-  //         graphsRef.current.getBoundingClientRect().top + window.pageYOffset;
-  //       window.scrollTo({ top, behavior: "smooth" });
-  //     }
-  //   }
-  // }, [activeTab]);
 
   const addTransaction = (transaction) => {
     if (editId) {
@@ -115,67 +106,47 @@ const App = () => {
     return searchMatch;
   });
 
-  const totalLoan = filteredTransactions
-    .filter((t) => t.type === "loan")
-    .reduce((sum, t) => sum + t.amount, 0);
-  const totalExpense = filteredTransactions
-    .filter((t) => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0);
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 max-w-full sm:max-w-5xl mx-auto rounded-lg shadow-lg dark:text-white">
-      <div className="flex justify-end items-center mb-4">
-        <LanguageSwitcher />
-        <ThemeSwitcher />
+    <Router>
+      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 max-w-full sm:max-w-5xl mx-auto rounded-lg shadow-lg dark:text-white">
+        <div className="flex justify-end items-center mb-4">
+          <LanguageSwitcher />
+          <ThemeSwitcher />
+        </div>
+
+        <NavBar />
+
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route
+              path="/dashboard"
+              element={<Dashboard transactions={filteredTransactions} />}
+            />
+            <Route
+              path="/graphs"
+              element={<Chart transactions={filteredTransactions} />}
+            />
+            <Route
+              path="/transactions"
+              element={
+                <>
+                  <ExportExcel transactions={filteredTransactions} />
+                  <Form onAddTransaction={addTransaction} />
+                  <ErrorBoundary>
+                    <Table
+                      transactions={filteredTransactions || []}
+                      onDelete={deleteTransaction}
+                      onEdit={editTransaction}
+                    />
+                  </ErrorBoundary>
+                </>
+              }
+            />
+          </Routes>
+        </ErrorBoundary>
       </div>
-
-      <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
-
-      <ErrorBoundary>
-        <AnimatePresence mode="wait">
-          {activeTab === "Dashboard" ? (
-            <motion.div
-              key="dashboard"
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Dashboard transactions={filteredTransactions} />
-            </motion.div>
-          ) : activeTab === "Graphs" ? (
-            <motion.div
-              key="graphs"
-              ref={graphsRef}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Chart transactions={filteredTransactions} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="transactions"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-            >
-              <ExportExcel transactions={filteredTransactions} />
-              <Form onAddTransaction={addTransaction} />
-              <ErrorBoundary>
-                <Table
-                  transactions={filteredTransactions || []}
-                  onDelete={deleteTransaction}
-                  onEdit={editTransaction}
-                />
-              </ErrorBoundary>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </ErrorBoundary>
-    </div>
+    </Router>
   );
 };
 
