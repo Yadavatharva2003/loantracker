@@ -59,44 +59,58 @@ const Dashboard = ({ transactions = [] }) => {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 px-2 sm:px-0">
         <motion.div
-          className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg p-6 shadow-lg flex flex-col items-center"
+          className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg p-4 sm:p-6 shadow-lg flex flex-col items-center"
           custom={0}
           initial="hidden"
           animate="visible"
           variants={cardVariants}
         >
-          <FaMoneyBillWave className="text-4xl mb-3" />
-          <h3 className="text-lg font-semibold mb-2">{t("total_loan")}</h3>
-          <p className="text-3xl font-bold">₹{totalLoan.toFixed(2)}</p>
+          <FaMoneyBillWave className="text-3xl sm:text-4xl mb-2 sm:mb-3" />
+          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">
+            {t("total_loan")}
+          </h3>
+          <p className="text-2xl sm:text-3xl font-bold">
+            ₹{totalLoan.toFixed(2)}
+          </p>
         </motion.div>
         <motion.div
-          className="bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg p-6 shadow-lg flex flex-col items-center"
+          className="bg-gradient-to-r from-green-500 to-green-700 text-white rounded-lg p-4 sm:p-6 shadow-lg flex flex-col items-center"
           custom={1}
           initial="hidden"
           animate="visible"
           variants={cardVariants}
         >
-          <FaShoppingCart className="text-4xl mb-3" />
-          <h3 className="text-lg font-semibold mb-2">{t("total_expense")}</h3>
-          <p className="text-3xl font-bold">₹{totalExpense.toFixed(2)}</p>
+          <FaShoppingCart className="text-3xl sm:text-4xl mb-2 sm:mb-3" />
+          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">
+            {t("total_expense")}
+          </h3>
+          <p className="text-2xl sm:text-3xl font-bold">
+            ₹{totalExpense.toFixed(2)}
+          </p>
         </motion.div>
         <motion.div
-          className="bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg p-6 shadow-lg flex flex-col items-center"
+          className="bg-gradient-to-r from-gray-700 to-gray-900 text-white rounded-lg p-4 sm:p-6 shadow-lg flex flex-col items-center"
           custom={2}
           initial="hidden"
           animate="visible"
           variants={cardVariants}
         >
-          <FaWallet className="text-4xl mb-3" />
-          <h3 className="text-lg font-semibold mb-2">{t("remaining")}</h3>
-          <p className="text-3xl font-bold">₹{remaining.toFixed(2)}</p>
+          <FaWallet className="text-3xl sm:text-4xl mb-2 sm:mb-3" />
+          <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">
+            {t("remaining")}
+          </h3>
+          <p className="text-2xl sm:text-3xl font-bold">
+            ₹{remaining.toFixed(2)}
+          </p>
         </motion.div>
       </div>
 
-      <div className="max-w-3xl mx-auto mb-6 p-4 border rounded-lg bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100">
-        <h4 className="text-xl font-semibold mb-2">{t("risk_assessment")}</h4>
+      <div className="max-w-full sm:max-w-3xl mx-auto mb-6 p-4 border rounded-lg bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100">
+        <h4 className="text-lg sm:text-xl font-semibold mb-2">
+          {t("risk_assessment")}
+        </h4>
         <p>
           {t("risk_level")}:{" "}
           <span
@@ -113,13 +127,13 @@ const Dashboard = ({ transactions = [] }) => {
         </p>
       </div>
 
-      <div className="max-w-3xl mx-auto mb-6 p-4 border rounded-lg">
-        <h4 className="text-lg font-semibold mb-2">
+      <div className="max-w-full sm:max-w-3xl mx-auto mb-6 p-4 border rounded-lg">
+        <h4 className="text-lg sm:text-xl font-semibold mb-2">
           {t("customize_dashboard")}
         </h4>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-3">
           <button
-            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+            className={`px-5 py-3 rounded-md shadow-md transition-colors duration-300 text-sm sm:text-base ${
               showTotalLoanExpense
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-300 text-gray-700"
@@ -129,7 +143,7 @@ const Dashboard = ({ transactions = [] }) => {
             {t("show_total_loan_expense_chart")}
           </button>
           <button
-            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+            className={`px-5 py-3 rounded-md shadow-md transition-colors duration-300 text-sm sm:text-base ${
               showMonthlyTrend
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-300 text-gray-700"
@@ -139,7 +153,7 @@ const Dashboard = ({ transactions = [] }) => {
             {t("show_monthly_trend_chart")}
           </button>
           <button
-            className={`px-4 py-2 rounded-md shadow-md transition-colors duration-300 ${
+            className={`px-5 py-3 rounded-md shadow-md transition-colors duration-300 text-sm sm:text-base ${
               showExpenseByCategory
                 ? "bg-indigo-600 text-white"
                 : "bg-gray-300 text-gray-700"
