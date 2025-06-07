@@ -13,7 +13,8 @@ import Form from "./components/Form";
 import Table from "./components/Table";
 import Chart from "./components/Chart";
 import Dashboard from "./components/Dashboard";
-import NavBar from "./components/NavBar";
+import FloatingSideNav from "./components/FloatingSideNav";
+import FloatingTransactionButton from "./components/FloatingTransactionButton";
 import ExportExcel from "./components/ExportExcel";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -114,7 +115,7 @@ const App = () => {
           <ThemeSwitcher />
         </div>
 
-        <NavBar />
+        <FloatingSideNav />
 
         <ErrorBoundary>
           <Routes>
@@ -145,6 +146,8 @@ const App = () => {
             />
           </Routes>
         </ErrorBoundary>
+
+        <FloatingTransactionButton />
       </div>
     </Router>
   );
