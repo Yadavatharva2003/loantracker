@@ -141,7 +141,7 @@ const App = () => {
               exit={{ opacity: 0, x: 50 }}
               transition={{ duration: 0.3 }}
             >
-              <Dashboard totalLoan={totalLoan} totalExpense={totalExpense} />
+              <Dashboard transactions={filteredTransactions} />
             </motion.div>
           ) : activeTab === "Graphs" ? (
             <motion.div
